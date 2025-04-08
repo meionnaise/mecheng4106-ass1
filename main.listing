@@ -1,0 +1,39 @@
+clear;
+clc;
+
+% known data
+M0 = 2.5;
+T0 = 220; %K
+Tt4 = 1600; %K
+hpr = 4.28e7; %Jkg-1
+cp = 1004; %Jkj-1K-1
+k = 1.4;
+
+%calc temp ratios
+tau_lambda = Tt4 / T0;
+tau_r = 1 + (((k - 1) / 2) * (M0 ^2));
+tau_c = sqrt(tau_lambda) / tau_r;
+
+%calc pressure ratio
+pi_c = tau_c^(k / (k - 1));
+
+%calc tau_t
+tau_t = 1 - ((tau_r / tau_lambda) * (tau_c - 1));
+
+%calculate a0
+a0 = sqrt(cp * (k - 1) * T0);
+
+%calculate specific thrust
+specific_thrust = a0 * (sqrt((2 / (k - 1)) * (tau_lambda / (tau_r * tau_c)) * ((tau_r * tau_c * tau_t) - 1)) - M0);
+
+%write to document
+values = [pi_c, tau_lambda, tau_r, tau_c, tau_t, a0, specific_thrust];
+labels = ["pi_c", "tau_lambda", "tau_r", "tau_c", "tau_t", "a0", "specific_thrust"];
+i = 1;
+for x = values
+    filename = sprintf("q4/%s.tex", labels(i));
+    file = fopen(filename, "w");
+    fwrite(file, sprintf("%.3f",x));
+    fclose(file);
+    i = i + 1;
+end
